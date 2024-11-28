@@ -1,73 +1,137 @@
+"use client";
+import { render } from "@/runner/actions";
 import Image from "next/image";
+import { useState } from "react";
+import { Button } from "@/components/ui/button"
+import { Card, CardContent } from "@/components/ui/card";
+import { Slider } from "@/components/ui/slider"
 
 export default function Home() {
+
+  const program = `
+
+// Global resolution
+$fs=$preview ? 1 : 0.1;  // Don't generate smaller facets than 0.1 mm
+$fa=$preview ? 15 : 5;    // Don't generate larger angles than 5 degrees
+
+svgFile = "import.svg";
+
+union() {
+    
+    linear_extrude(height = 2) {
+        difference() {
+            scale(v=[size, size, size])
+               import(svgFile, convexity=10);
+            
+            offset(r=-3) {
+                    scale(v=[size, size, size])
+                    import(svgFile, convexity=10);
+                
+            }
+        }
+    }
+    
+    linear_extrude(height = 18) {
+        difference() {
+            offset(r=-2) {
+               scale(v=[size, size, size])
+               import(svgFile, convexity=10);
+            
+            }
+            offset(r=-3) {
+               scale(v=[size, size, size])
+               import(svgFile, convexity=10);
+            
+            }
+        }
+    }
+
+
+}`;
+
+  const [isLoading, setIsLoading] = useState(false);
+  const [svgContent, setSvgContent] = useState("");
+  const [stlFile, setStlFile] = useState<File | null>(null);
+  const [fileName, setFileName] = useState("");
+  const [scale, setScale] = useState(1);
+
+  function readFile(file: File) {
+    //remove extension and replace with .stl
+    let exportetFileName = file.name.replace(/\.[^/.]+$/, ".stl");
+    setFileName(exportetFileName);
+    const reader = new FileReader();
+    reader.onload = function (e: any) {
+      setSvgContent(e.target?.result as string)
+    };
+    reader.readAsText(file);
+  }
+
+  function convert() {
+    setStlFile(null);
+    setIsLoading(true);
+    render({
+      source: "size = " + scale + ";\n\n" + program,
+      sourcePath: "./main.scad",
+      isPreview: true,
+      vars: {},
+      features: [],
+      extraArgs: [],
+      svgFile: svgContent
+    }).then((result) => {
+      setStlFile(result.stlFile);
+      setIsLoading(false);
+      console.log(result);
+    });
+  }
+
+  function download() {
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(stlFile!);
+    link.download = fileName;
+    document.body.append(link);
+    link.click();
+    link.remove();
+  }
+
   return (
     <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+      <Card className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
+        <CardContent className="flex flex-col gap-8 p-8">
+          <h1 className="text-5xl font-bold">
+            <span className="text-primary">Plätzchen 3D-Modell Converter</span>
+          </h1>
+          <label htmlFor="input">Wähle die SVG Datei:</label>
+          <input type="file" id="input" accept=".svg" onChange={(e: any) => readFile(e.target.files[0])} />
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
+          <div className="flex flex-col w-full items-start ">
+            <label htmlFor="scale">Skalierung:</label>
+            <div className="flex flex-row gap-4 w-full items-center ">
+              <Slider id="scale" min={0.1} max={2} step={0.1} defaultValue={[1]} className="w-1/2" onValueChange={(value) => setScale(value[0])} />
+              <div className="flex flex-row">{Math.floor(scale * 100)}%</div>
+            </div>
+          </div>
+
+          {
+            svgContent != "" ? <div>
+              <img src={`data:image/svg+xml;utf8,${encodeURIComponent(svgContent)}`} />
+            </div> : <p></p>
+          }
+
+          {
+            stlFile ? <Button onClick={download}>Download STL</Button> : <></>
+          }
+
+          {
+            !isLoading ? <Button onClick={convert}>Convert</Button> : <p id="status">Wird konvertiert... Bitte warten... Dieser Vorgang kann bis zu 5 Minuten dauern.</p>
+          }
+
+        </CardContent>
+      </Card>
       <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
+
         <a
           className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
+          href="https://wri-obernburg.de"
           target="_blank"
           rel="noopener noreferrer"
         >
@@ -78,11 +142,11 @@ export default function Home() {
             width={16}
             height={16}
           />
-          Examples
+          WRI-Website
         </a>
         <a
           className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
+          href="https://github.com/wri-obernburg"
           target="_blank"
           rel="noopener noreferrer"
         >
@@ -93,7 +157,7 @@ export default function Home() {
             width={16}
             height={16}
           />
-          Go to nextjs.org →
+          Github  →
         </a>
       </footer>
     </div>
