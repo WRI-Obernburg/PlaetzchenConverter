@@ -10,22 +10,23 @@ export default function Home() {
 
   const program = `
 
-// Global resolution
-$fs=$preview ? 1 : 0.1;  // Don't generate smaller facets than 0.1 mm
-$fa=$preview ? 15 : 5;    // Don't generate larger angles than 5 degrees
-
 svgFile = "import.svg";
 
 union() {
     
-    linear_extrude(height = 2) {
+    linear_extrude(height = 2.5) {
         difference() {
-            scale(v=[size, size, size])
-               import(svgFile, convexity=10);
+            offset(r=-1) {
+                    scale(v=[size, size, size]) {
+                    import(svgFile);
+                    }
+                
+            }
             
-            offset(r=-3) {
-                    scale(v=[size, size, size])
-                    import(svgFile, convexity=10);
+            offset(r=-4) {
+                    scale(v=[size, size, size]) {
+                    import(svgFile);
+                    }
                 
             }
         }
@@ -33,21 +34,23 @@ union() {
     
     linear_extrude(height = 18) {
         difference() {
-            offset(r=-2) {
-               scale(v=[size, size, size])
-               import(svgFile, convexity=10);
-            
-            }
             offset(r=-3) {
                scale(v=[size, size, size])
-               import(svgFile, convexity=10);
+               import(svgFile);
+            
+            }
+            offset(r=-4) {
+               scale(v=[size, size, size])
+               import(svgFile);
             
             }
         }
     }
 
 
-}`;
+}
+    
+`;
 
   const [isLoading, setIsLoading] = useState(false);
   const [svgContent, setSvgContent] = useState("");
@@ -72,7 +75,7 @@ union() {
     render({
       source: "size = " + scale + ";\n\n" + program,
       sourcePath: "./main.scad",
-      isPreview: true,
+      isPreview: false,
       vars: {},
       features: [],
       extraArgs: [],
