@@ -1,4 +1,4 @@
-import { MergedOutputs } from "./openscad-worker";
+export type MergedOutputs = {stdout?: string, stderr?: string, error?: string}[];
 
 const ignoredLogs = new Set([
   'Could not initialize localization.'
