@@ -2,13 +2,13 @@
 let wasmModule;
 async function OpenSCAD(options) {
     if (!wasmModule) {
-        const url = new URL(`./openscad.wasm.js`, "http://localhost:3000/").href;
+        const url = new URL(`./openscad.wasm.js`, self.location.origin+"/").href;
         const request = await fetch(url);
         wasmModule = "data:text/javascript;base64," + btoa(await request.text());
     }
     const module = {
         noInitialRun: true,
-        locateFile: (path) => new URL(`./${path}`, "http://localhost:3000/").href,
+        locateFile: (path) => new URL(`./${path}`, self.location.origin+"/").href,
         ...options,
     };
     globalThis.OpenSCAD = module;
