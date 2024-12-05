@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
-import { useState } from "react";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -24,7 +23,6 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const [show, setShow] = useState(true);
   return (
     <html lang="en">
       <head>
@@ -54,7 +52,7 @@ export default function RootLayout({
 
         <section className="mountains">
           <div className='mt1'>
-            <div className={"mtsnow1 "+show?"":"hidden"} onClick={() => setShow(!show)}></div>
+            <div className="mtsnow1"></div>
             <div className="snow-peak-1a"></div>
             <div className="snow-peak-1b"></div>
           </div>
