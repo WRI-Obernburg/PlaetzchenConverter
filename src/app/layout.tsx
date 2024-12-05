@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
+import { useState } from "react";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -23,10 +24,12 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const [show, setShow] = useState(true);
   return (
     <html lang="en">
       <head>
-        <script src="https://kit.fontawesome.com/901ba758ee.js" crossOrigin="anonymous"></script>
+      <script src="https://kit.fontawesome.com/e499b9f739.js" crossorigin="anonymous"></script>
+
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#a1b8ce] w-screen h-screen overflow-hidden`}
@@ -51,7 +54,7 @@ export default function RootLayout({
 
         <section className="mountains">
           <div className='mt1'>
-            <div className="mtsnow1"></div>
+            <div className={"mtsnow1 "+show?"":"hidden"} onClick={() => setShow(!show)}></div>
             <div className="snow-peak-1a"></div>
             <div className="snow-peak-1b"></div>
           </div>
