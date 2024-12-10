@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
   headers.set('Content-Disposition', 'attachment; filename="file.stl"');
   headers.set('Content-Type', 'application/octet-stream');
 
-  utapi.deleteFiles([query]);
+  utapi.deleteFiles([query.split("/").pop()!]);
 
   return new Response(file.body, {
     headers,
