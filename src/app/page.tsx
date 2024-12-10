@@ -5,7 +5,11 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card";
 import { Slider } from "@/components/ui/slider"
+import { generateReactHelpers } from "@uploadthing/react";
+import { OurFileRouter } from "./api/downloadFile/uploadthing/core";
 
+export const { useUploadThing, uploadFiles } =
+  generateReactHelpers<OurFileRouter>();
 export default function Home() {
 
   const program = `
@@ -66,6 +70,7 @@ union() {
   const [stlFile, setStlFile] = useState<File | null>(null);
   const [fileName, setFileName] = useState("");
   const [scale, setScale] = useState(1);
+  const [curaLoading, setCuraLoading] = useState(false);
 
   function readFile(file: File) {
     //remove extension and replace with .stl
@@ -76,6 +81,8 @@ union() {
       setSvgContent(e.target?.result as string)
     };
     reader.readAsText(file);
+    setStlFile(null);
+
   }
 
   function convert() {
@@ -103,7 +110,21 @@ union() {
       setScale(1);
     });
   }
-
+ async function openInCura() {
+    //upload file to uploadthing
+    //open in cura
+    setCuraLoading(true);
+    console.log("open in cura");
+    const response = await uploadFiles("stlUploader", {
+      files: [stlFile!],
+    });
+    console.log(response[0].url);
+    
+    window.location.href ="cura://open?file=" + encodeURIComponent(window.location.origin+"/api/downloadFile?file="+response[0].url);
+  
+    setCuraLoading(false);
+  
+  }
   function download() {
     const link = document.createElement("a");
     link.href = URL.createObjectURL(stlFile!);
@@ -136,11 +157,14 @@ union() {
 
 
             {
-              stlFile ? <Button onClick={download}>Download STL</Button> : <></>
+              stlFile ? <div className="flex flex-row gap-4 w-full flex-1 justify-stretch">
+                <Button  className="flex-1" onClick={download}>Download STL</Button>
+                <Button disabled={curaLoading} className="flex-1" onClick={openInCura}>{curaLoading ? "Loading..." : "Open in Cura"}</Button>
+              </div> : <></>
             }
 
             {
-              !isLoading ? <Button onClick={convert}>Convert</Button> : <p id="status">Wird konvertiert... Bitte warten... Dieser Vorgang kann bis zu 10 Sekunden dauern.</p>
+              (!isLoading) ? <Button onClick={convert}>Convert</Button> : <p id="status">Wird konvertiert... Bitte warten... Dieser Vorgang kann bis zu 10 Sekunden dauern.</p>
             }
 
           </CardContent>

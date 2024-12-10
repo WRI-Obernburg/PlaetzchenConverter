@@ -12,6 +12,7 @@
     "@radix-ui/react-slider": "^1.2.1",
     "@radix-ui/react-slot": "^1.1.0",
     "@rollup/plugin-replace": "^6.0.1",
+    "@uploadthing/react": "^7.1.2",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-react": "^0.462.0",
@@ -22,7 +23,8 @@
     "rollup-plugin-typescript2": "^0.36.0",
     "tailwind-merge": "^2.5.5",
     "tailwindcss-animate": "^1.0.7",
-    "universalify": "^2.0.1"
+    "universalify": "^2.0.1",
+    "uploadthing": "^7.4.0"
   },
   "devDependencies": {
     "typescript": "^5",
