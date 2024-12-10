@@ -8,8 +8,8 @@ import { Slider } from "@/components/ui/slider"
 import { generateReactHelpers } from "@uploadthing/react";
 import { OurFileRouter } from "./api/uploadthing/core";
 
-export const { uploadFiles } =
-  generateReactHelpers<OurFileRouter>();
+const { uploadFiles } = generateReactHelpers<OurFileRouter>();
+
 export default function Home() {
 
   const program = `
