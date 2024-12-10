@@ -12,42 +12,51 @@ export default function Home() {
 
 svgFile = "import.svg";
 
+rotate([180,0,0]) {
 union() {
     
     linear_extrude(height = 2.5) {
         difference() {
-            offset(r=-1) {
+            offset(delta=2) {
                     scale(v=[size, size, size]) {
-                    import(svgFile);
+                    offset(r=0.01)
+                        import(svgFile);
                     }
                 
             }
             
-            offset(r=-4) {
+            offset(delta=-1) {
                     scale(v=[size, size, size]) {
-                    import(svgFile);
+                    offset(r=0.01)
+                        import(svgFile);
                     }
                 
             }
         }
     }
     
+    translate([0,0,-18]) {
     linear_extrude(height = 18) {
         difference() {
-            offset(r=-3) {
+            offset(delta=0) {
                scale(v=[size, size, size])
-               import(svgFile);
+                    offset(r=0.01)
+                        import(svgFile);
             
             }
-            offset(r=-4) {
+            offset(delta=-1) {
                scale(v=[size, size, size])
-               import(svgFile);
+                    offset(r=0.01)
+                        import(svgFile);
             
             }
         }
     }
+}
 
 
+
+}
 }
     
 `;
@@ -72,12 +81,13 @@ union() {
   function convert() {
     setStlFile(null);
     setIsLoading(true);
+    console.log("invoked");
     render({
       source: "size = " + scale + ";\n\n" + program,
       sourcePath: "./main.scad",
       isPreview: false,
       vars: {},
-      features: [],
+      features: ["manifold", "fast-csg", "lazy-union"],
       extraArgs: [],
       svgFile: svgContent
     }).then((result) => {
@@ -130,7 +140,7 @@ union() {
             }
 
             {
-              !isLoading ? <Button onClick={convert}>Convert</Button> : <p id="status">Wird konvertiert... Bitte warten... Dieser Vorgang kann bis zu 5 Minuten dauern.</p>
+              !isLoading ? <Button onClick={convert}>Convert</Button> : <p id="status">Wird konvertiert... Bitte warten... Dieser Vorgang kann bis zu 10 Sekunden dauern.</p>
             }
 
           </CardContent>

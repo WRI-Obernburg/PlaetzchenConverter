@@ -37,12 +37,12 @@ export function render({sourcePath, source, isPreview, vars, features, extraArgs
     const args = [
       sourcePath,
       "-o", "out.stl",
-      "--export-format=binstl",
+    //  "--export-format=binstl",
       ...(Object.entries(vars ?? {}).flatMap(([k, v]) => [`-D${k}=${formatValue(v)}`])),
       ...(features ?? []).map(f => `--enable=${f}`),
       ...(extraArgs ?? [])
     ]
-    
+    console.log("spawn");
     const job = spawnOpenSCAD({
       // wasmMemory,
       inputs: [[sourcePath, source]],

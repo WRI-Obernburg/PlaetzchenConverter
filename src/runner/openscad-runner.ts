@@ -44,6 +44,8 @@ export function spawnOpenSCAD(invocation: OpenSCADInvocation): Promise<OpenSCADI
   }
     
   return new Promise<OpenSCADInvocationResults>((resolve, reject) => {
+    console.log("creating worker");
+
     worker = new Worker('./openscad-worker.js');//, {type: "module"})
     // if (navigator.userAgent.indexOf(' Chrome/') < 0) {
     //   worker = new Worker('./openscad-worker-firefox.js'); // {'type': 'module'}

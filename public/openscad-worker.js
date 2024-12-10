@@ -2,22 +2,25 @@
 let wasmModule;
 async function OpenSCAD(options) {
     if (!wasmModule) {
-        const url = new URL(`./openscad.wasm.js`, self.location.origin+"/").href;
+        const url = new URL(`./openscad.js`, self.location.origin + "/").href;
         const request = await fetch(url);
         wasmModule = "data:text/javascript;base64," + btoa(await request.text());
     }
+    console.log("fetched wasm module");
     const module = {
         noInitialRun: true,
-        locateFile: (path) => new URL(`./${path}`, self.location.origin+"/").href,
+        locateFile: (path) => new URL(`./${path}`, self.location.origin + "/").href,
         ...options,
     };
-    globalThis.OpenSCAD = module;
-    await import(wasmModule + `#${Math.random()}`);
-    delete globalThis.OpenSCAD;
-    await new Promise((resolve) => {
-        module.onRuntimeInitialized = () => resolve(null);
-    });
-    return module;
+    //original code: import OpenSCAD from "./openscad.js";
+    // const instance = await OpenSCAD({noInitialRun: true});
+    //converted code:
+    const openscad = await import(wasmModule + `#${Math.random()}`);
+    const instance = await openscad.default(module);
+    console.log("imported openscad");
+
+
+    return instance;
 }
 
 // Portions of this file are Copyright 2021 Google LLC, and licensed under GPL2+. See COPYING.
@@ -68,9 +71,9 @@ const zipArchives = {
             branch: 'master',
             repoUrl: 'https://github.com/nophead/NopSCADlib',
             include: [{
-                    glob: '**/*.scad',
-                    ignore: 'test/**',
-                }],
+                glob: '**/*.scad',
+                ignore: 'test/**',
+            }],
         },
     },
     'boltsparts': {
@@ -79,9 +82,9 @@ const zipArchives = {
             branch: 'main',
             repoUrl: 'https://github.com/boltsparts/boltsparts',
             include: [{
-                    glob: 'openscad/**/*.scad',
-                    ignore: 'test/**',
-                }],
+                glob: 'openscad/**/*.scad',
+                ignore: 'test/**',
+            }],
         },
         docs: {
             'Usage': 'https://boltsparts.github.io/en/docs/0.3/document/openscad/usage.html',
@@ -92,9 +95,9 @@ const zipArchives = {
             branch: 'main',
             repoUrl: 'https://github.com/BelfrySCAD/brailleSCAD',
             include: [{
-                    glob: ['**/*.scad', 'LICENSE'],
-                    ignore: 'test/**',
-                }],
+                glob: ['**/*.scad', 'LICENSE'],
+                ignore: 'test/**',
+            }],
         },
         docs: {
             'Documentation': 'https://github.com/BelfrySCAD/brailleSCAD/wiki/TOC',
@@ -201,10 +204,12 @@ const zipArchives = {
         gitOrigin: {
             branch: 'main',
             repoUrl: 'https://github.com/UBaer21/UB.scad',
-            include: [{ glob: ['libraries/*.scad', 'LICENSE', 'examples/UBexamples/*.scad'], replacePrefix: {
-                        'libraries/': '',
-                        'examples/UBexamples/': 'examples/',
-                    } }],
+            include: [{
+                glob: ['libraries/*.scad', 'LICENSE', 'examples/UBexamples/*.scad'], replacePrefix: {
+                    'libraries/': '',
+                    'examples/UBexamples/': 'examples/',
+                }
+            }],
         },
         symlinks: { "ub.scad": "libraries/ub.scad" }, // TODO change this after the replaces work
     },
@@ -315,36 +320,42 @@ async function createEditorFS({ prefix, allowPersistence }) {
 // Portions of this file are Copyright 2021 Google LLC, and licensed under GPL2+. See COPYING.
 importScripts("browserfs.min.js");
 addEventListener('message', async (e) => {
+    console.log("message from main thread");
     var _a, _b;
     const { inputs, args, outputPaths, wasmMemory, svgFile } = e.data;
     const mergedOutputs = [];
+    console.log("creating openscad");
+
     try {
         const instance = await OpenSCAD({
             wasmMemory,
             buffer: wasmMemory && wasmMemory.buffer,
             noInitialRun: true,
             'print': (text) => {
-                console.debug('stdout: ' + text);
+                console.log('stdout: ' + text);
                 mergedOutputs.push({ stdout: text });
             },
             'printErr': (text) => {
-                console.debug('stderr: ' + text);
+                console.error('stderr: ' + text);
                 mergedOutputs.push({ stderr: text });
             },
         });
+        console.log("created openscad");
+        console.log(instance)
+
         // This will mount lots of libraries' ZIP archives under /libraries/<name> -> <name>.zip
-        await createEditorFS({ prefix: '', allowPersistence: false });
-        instance.FS.mkdir('/libraries');
+        // await createEditorFS({ prefix: '', allowPersistence: false });
+        // instance.FS.mkdir('/libraries');
         // https://github.com/emscripten-core/emscripten/issues/10061
-        const BFS = new BrowserFS.EmscriptenFS(instance.FS, (_a = instance.PATH) !== null && _a !== void 0 ? _a : {
-            join2: (a, b) => `${a}/${b}`,
-            join: (...args) => args.join('/'),
-        }, (_b = instance.ERRNO_CODES) !== null && _b !== void 0 ? _b : {});
-        instance.FS.mount(BFS, { root: '/' }, '/libraries');
-        await symlinkLibraries(deployedArchiveNames, instance.FS, '/libraries', "/");
-        // Fonts are seemingly resolved from $(cwd)/fonts
-        instance.FS.chdir("/");
-        instance.FS.writeFile("/import.svg", svgFile);
+        //const BFS = new BrowserFS.EmscriptenFS(instance.FS, (_a = instance.PATH) !== null && _a !== void 0 ? _a : {
+        ////    join2: (a, b) => `${a}/${b}`,
+        join: (...args) => args.join('/'),
+            // }, (_b = instance.ERRNO_CODES) !== null && _b !== void 0 ? _b : {});
+            //instance.FS.mount(BFS, { root: '/' }, '/libraries');
+            // await symlinkLibraries(deployedArchiveNames, instance.FS, '/libraries', "/");
+            // Fonts are seemingly resolved from $(cwd)/fonts
+            // instance.FS.chdir("/");
+            instance.FS.writeFile("/import.svg", svgFile);
         if (inputs) {
             for (const [path, content] of inputs) {
                 try {
