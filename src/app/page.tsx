@@ -6,9 +6,9 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card";
 import { Slider } from "@/components/ui/slider"
 import { generateReactHelpers } from "@uploadthing/react";
-import { OurFileRouter } from "./api/downloadFile/uploadthing/core";
+import { OurFileRouter } from "./api/uploadthing/core";
 
-export const { useUploadThing, uploadFiles } =
+export const { uploadFiles } =
   generateReactHelpers<OurFileRouter>();
 export default function Home() {
 
