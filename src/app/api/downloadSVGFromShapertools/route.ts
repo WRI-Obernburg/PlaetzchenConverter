@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
         headers: {
             "Accept": "application/x-url",
             "Accept-Language": "de-DE,de;q=0.9,en-US;q=0.8,en;q=0.7",
-            "Authorization": "Bearer "+jwt,
+            "Authorization": "Bearer "+jwt.access_token.token,
             "Cache-Control": "no-cache",
             "Connection": "keep-alive",
             "Origin": "https://hub.shapertools.com",

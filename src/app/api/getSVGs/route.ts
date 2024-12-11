@@ -12,7 +12,7 @@ export async function GET(request: NextRequest) {
             headers: {
               "Accept": "*/*",
               "Accept-Language": "de-DE,de;q=0.9",
-              "Authorization": "Bearer "+jwt,
+              "Authorization": "Bearer "+jwt.access_token.token,
               "Cache-Control": "no-cache",
               "Connection": "keep-alive",
               "Origin": "https://hub.shapertools.com",
@@ -31,10 +31,12 @@ export async function GET(request: NextRequest) {
           })
             .then((response) => response.text())
             .catch(console.error);
+       const parsedData = JSON.parse(svgs!);
+       parsedData.jwt = jwt;
 
 
 
-      return new Response(svgs!, {
+      return new Response(JSON.stringify(parsedData), {
         status: 200,
         headers: {
           "Content-Type": "application/json",

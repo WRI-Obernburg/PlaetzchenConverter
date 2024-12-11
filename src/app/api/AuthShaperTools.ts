@@ -34,5 +34,5 @@ export default async function AuthShaperTools(user: string, pw: string) {
     })
         .then((response) => response.json()).catch(console.error);
 
-    return (data as any).access_token.token;
+    return (data as any);
 }
