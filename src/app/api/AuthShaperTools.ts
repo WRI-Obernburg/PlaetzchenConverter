@@ -29,7 +29,8 @@ export default async function AuthShaperTools(user: string, pw: string) {
         }),
         redirect: "follow",
         next: {
-            revalidate: 100000
+            revalidate: 100000,
+            tags: ["a"]
         }
     })
         .then((response) => response.json()).catch(console.error);

@@ -1,5 +1,6 @@
 import {NextRequest} from "next/server";
 import AuthShaperTools from "@/app/api/AuthShaperTools";
+import {revalidateTag} from "next/cache";
 
 export async function GET(request: NextRequest) {
 
@@ -31,7 +32,9 @@ export async function GET(request: NextRequest) {
         },
         redirect: "follow"
     })
-        .then((response) => response.text())
+        .then((response) => response.text()).catch(()=>{
+           revalidateTag("a");
+       });
 
 
     return new Response(JSON.stringify({
