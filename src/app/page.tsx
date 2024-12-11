@@ -165,7 +165,7 @@ union() {
   }, []);
 
   return (
-    <div className="flex bg-transparent items-center justify-center flex-col justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
+    <div className="flex bg-transparent items-center justify-center flex-col justify-items-center min-h-screen pb-20 gap-16 p-20 font-[family-name:var(--font-geist-sans)]">
       <div className="flex flex-row justify-center items-center gap-8 w-full ">
         <Card className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
           <CardContent className="flex flex-col gap-8 p-8">
@@ -175,7 +175,7 @@ union() {
               <p className=" text-3xl font-boldtext-primary">Konvertiere deine Plätzchen in 3D Modelle</p>
             </div>
             <div className="flex flex-row gap-4 items-center justify-between">
-              <Input className={"w-fit"}  type="file" id="input" accept=".svg" onChange={(e: any) => readFile(e.target.files[0])} />
+              <Input className={"w-fit items-center text-center"}  type="file" id="input" accept=".svg" onChange={(e: any) => readFile(e.target.files[0])} />
 
               { shaperToolsPW && shaperToolsUser &&
               <>
