@@ -29,12 +29,12 @@ export async function GET(request: NextRequest) {
             },
             redirect: "follow"
           })
-            .then((response) => response.json())
+            .then((response) => response.text())
             .catch(console.error);
-          
-      
 
-      return new Response(JSON.stringify(svgs.results), {
+
+
+      return new Response(svgs!, {
         status: 200,
         headers: {
           "Content-Type": "application/json",

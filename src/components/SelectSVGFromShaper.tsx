@@ -97,7 +97,7 @@ export default function SelectSVGFromShaper(props: {onSelect: (svgModel: File) =
         fetch("/api/getSVGs"+"?pw="+props.pw+"&user="+props.user)
             .then((response) => response.json())
             .then((data) => {
-                setSvgModels(data);
+                setSvgModels(data.results);
                 setLoading(false);
             });
     }
