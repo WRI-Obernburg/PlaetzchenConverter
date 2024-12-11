@@ -29,7 +29,7 @@ export default async function AuthShaperTools(user: string, pw: string) {
         }),
         redirect: "follow",
         next: {
-            revalidate: 100000,
+            revalidate: 10000,
             tags: ["a"]
         }
     })

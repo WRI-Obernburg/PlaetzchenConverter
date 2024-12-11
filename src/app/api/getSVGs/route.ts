@@ -34,7 +34,16 @@ export async function GET(request: NextRequest) {
 
         if(svgs.status !== 200) {
             revalidateTag("a");
-            return GET(request);
+            return new Response(JSON.stringify(svgs), {
+                status: 201,
+                headers: {
+                    "Content-Type": "application/json",
+                    "Access-Control-Allow-Origin": "*",
+                    "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, PATCH, OPTIONS",
+                    "Access-Control-Allow-Headers": "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version",
+                    "Access-Control-Allow-Credentials": "true"
+                }
+            });
         }
 
         const data = await svgs.text();
