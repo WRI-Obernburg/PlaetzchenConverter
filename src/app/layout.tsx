@@ -12,7 +12,6 @@ const geistMono = localFont({
   variable: "--font-geist-mono",
   weight: "100 900",
 });
-
 export const metadata: Metadata = {
   title: "WRI-Weihnachts-Werkstatt",
   description: "Konvertiere deine Plätzchen in 3D Modelle",
@@ -27,10 +26,10 @@ export default function RootLayout({
     <html lang="en">
       <head>
       <script src="https://kit.fontawesome.com/e499b9f739.js" crossOrigin="anonymous"></script>
-
+        <meta http-equiv="origin-trial" content="Asj8x1emDAMnYM/2D2y+KLSz/9q93MbD2d2fpb6QPsgwmu6BnItubVfq+suSBS0rONtAkj6DL1w15zzTXh+Sog4AAACFeyJvcmlnaW4iOiJodHRwczovL3BsYWV0emNoZW4tY29udmVydGVyLnZlcmNlbC5hcHA6NDQzIiwiZmVhdHVyZSI6IlByaXZhdGVOZXR3b3JrQWNjZXNzTm9uU2VjdXJlQ29udGV4dHNBbGxvd2VkIiwiZXhwaXJ5IjoxNzQyMjU2MDAwfQ=="/>
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#a1b8ce] w-screen h-screen overflow-hidden`}
+          className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#a1b8ce] w-screen h-screen overflow-hidden`}
       >
         <section className="snow">
           <div className="snowflake"><i className="fa-regular fa-snowflake"></i></div>

@@ -1,14 +1,19 @@
 "use client";
 import { render } from "@/runner/actions";
 import Image from "next/image";
-import { useState } from "react";
+import {Suspense, useEffect, useState} from "react";
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card";
 import { Slider } from "@/components/ui/slider"
 import { generateReactHelpers } from "@uploadthing/react";
 import { OurFileRouter } from "./api/uploadthing/core";
+import SelectSVGFromShaper from "@/components/SelectSVGFromShaper";
+import {HelpCircle} from "lucide-react";
+import HelpDialog from "@/components/HelpDialog";
+import {Input} from "@/components/ui/input";
 
 const { uploadFiles } = generateReactHelpers<OurFileRouter>();
+
 
 export default function Home() {
 
@@ -71,6 +76,8 @@ union() {
   const [fileName, setFileName] = useState("");
   const [scale, setScale] = useState(1);
   const [curaLoading, setCuraLoading] = useState(false);
+  const [shaperToolsPW, setShaperToolsPW] = useState("");
+  const [shaperToolsUser, setShaperToolsUser] = useState("");
 
   function readFile(file: File) {
     //remove extension and replace with .stl
@@ -134,6 +141,29 @@ union() {
     link.remove();
   }
 
+  useEffect(() => {
+    const callback =  async () => {
+          try {
+              // @ts-ignore
+              const credentials = await fetch("http://rpi-1.local:3000/converter/login", {
+                  // @ts-ignore
+                  targetAddressSpace: "private",
+              }).then((response) => response.json());
+
+              setShaperToolsPW(credentials.pw);
+              setShaperToolsUser(credentials.user);
+
+          }catch(e) {
+
+          }
+      }
+
+      callback();
+
+
+
+  }, []);
+
   return (
     <div className="flex bg-transparent items-center justify-center flex-col justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
       <div className="flex flex-row justify-center items-center gap-8 w-full ">
@@ -144,8 +174,17 @@ union() {
 
               <p className=" text-3xl font-boldtext-primary">Konvertiere deine Plätzchen in 3D Modelle</p>
             </div>
-            <label htmlFor="input">Wähle die SVG Datei:</label>
-            <input type="file" id="input" accept=".svg" onChange={(e: any) => readFile(e.target.files[0])} />
+            <div className="flex flex-row gap-4 items-center justify-between">
+              <Input className={"w-fit"}  type="file" id="input" accept=".svg" onChange={(e: any) => readFile(e.target.files[0])} />
+
+              { shaperToolsPW && shaperToolsUser &&
+              <>
+                <p>oder</p>
+                <SelectSVGFromShaper user={shaperToolsUser} pw={shaperToolsPW} onSelect={(e:File) => readFile(e)}/>
+
+              </>
+              }
+            </div>
 
             <div className="flex flex-col w-full items-start ">
               <label htmlFor="scale">Skalierung:</label>
@@ -185,36 +224,36 @@ union() {
 
       </div>
       <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center bg-white rounded-xl p-8 shadow">
-
+        <HelpDialog onExampleLoad={(e:File)=> readFile(e)}/>
         <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://wri-obernburg.de"
-          target="_blank"
-          rel="noopener noreferrer"
+            className="flex items-center gap-2 hover:underline hover:underline-offset-4"
+            href="https://wri-obernburg.de"
+            target="_blank"
+            rel="noopener noreferrer"
         >
           <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
+              aria-hidden
+              src="/window.svg"
+              alt="Window icon"
+              width={16}
+              height={16}
           />
           WRI-Website
         </a>
         <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://github.com/wri-obernburg"
-          target="_blank"
-          rel="noopener noreferrer"
+            className="flex items-center gap-2 hover:underline hover:underline-offset-4"
+            href="https://github.com/wri-obernburg"
+            target="_blank"
+            rel="noopener noreferrer"
         >
           <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
+              aria-hidden
+              src="/globe.svg"
+              alt="Globe icon"
+              width={16}
+              height={16}
           />
-          Github  →
+          Github →
         </a>
       </footer>
     </div>

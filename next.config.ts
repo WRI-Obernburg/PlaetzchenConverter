@@ -5,6 +5,16 @@ const nextConfig: NextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
 },
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'thumbnails.shapercdn.com',
+        port: '',
+        pathname: '**',
+      },
+    ],
+  },
 };
 
 
