@@ -29,12 +29,17 @@ export async function GET(request: NextRequest) {
               "sec-ch-ua-platform": "\"Windows\""
             },
             redirect: "follow"
-          })
-            .then((response) => response.text())
-            .catch(()=>{
-                revalidateTag("a");
-            });
-       const parsedData = JSON.parse(svgs!);
+          });
+
+
+        if(svgs.status !== 200) {
+            revalidateTag("a");
+            return GET(request);
+        }
+
+        const data = await svgs.text();
+
+       const parsedData = JSON.parse(data!);
        parsedData.jwt = jwt;
 
 
