@@ -170,9 +170,9 @@ union() {
         <Card className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
           <CardContent className="flex flex-col gap-8 p-8">
             <div>
-              <p className="text-primary text-5xl font-bold">MINTbayU-Weihnachts-Werkstatt</p>
+              <p className="text-primary text-5xl font-bold">MINTbayU-Oster-Werkstatt</p>
 
-              <p className=" text-3xl font-boldtext-primary">Konvertiere deine Plätzchen in 3D Modelle</p>
+              <p className=" text-3xl font-boldtext-primary">Konvertiere deine Zeichnungen in Ausstecher</p>
             </div>
             <div className="flex flex-row gap-4 items-center justify-between">
               <Input className={"w-fit items-center text-center"}  type="file" id="input" accept=".svg" onChange={(e: any) => readFile(e.target.files[0])} />

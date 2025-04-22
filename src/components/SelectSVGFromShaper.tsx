@@ -94,12 +94,18 @@ export default function SelectSVGFromShaper(props: {onSelect: (svgModel: File) =
 
     function loadData() {
         setLoading(true);
-        fetch("/api/getSVGs"+"?pw="+props.pw+"&user="+props.user)
-            .then((response) => response.json())
-            .then((data) => {
-                setSvgModels(data.results);
-                setLoading(false);
-            });
+        try {
+            fetch("/api/getSVGs"+"?pw="+props.pw+"&user="+props.user)
+                .then((response) => response.json())
+                .then((data) => {
+                    if(data!=null && data.results!=null) {
+                        setSvgModels(data.results);
+                        setLoading(false);
+                    }
+                });
+        }catch (e) {
+
+        }
     }
 
 

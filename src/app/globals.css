@@ -35,7 +35,7 @@ body {
     --radius: 0.5rem;
   }
   .dark {
-    --background: 240 10% 3.9%;
+    --background: #52d1ff;
     --foreground: 0 0% 98%;
     --card: 240 10% 3.9%;
     --card-foreground: 0 0% 98%;
@@ -340,7 +340,8 @@ body {
 .mountains {
 	width: 100%;
   z-index: -1;
-  pointer-events: none
+  pointer-events: none;
+	position:absolute;
 }
 
 .mt1 {
@@ -680,3 +681,230 @@ body {
 	border-bottom: 0px solid transparent;
 	border-left: 25px solid transparent;
 }
+
+
+
+body {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex: 1;
+	height: 100vh;
+	margin: 0;
+
+}
+
+
+
+.egg {
+	background: #4482d9;
+	border-radius: 50%/60% 60% 40% 40%;
+	overflow: hidden;
+	position: absolute;
+	box-shadow: 0 0 10px 5px rgba(0, 0, 0, 0.1);
+	width: 50%;
+}
+
+.egg:after,
+.stripes:after {
+	content: "";
+	display: block;
+	padding-bottom: 150%;
+}
+
+.stripes {
+	position: absolute;
+	overflow: hidden;
+	border-radius: 50%/60% 60% 40% 40%;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+}
+
+.dots,
+.line,
+.zigzag {
+	position: absolute;
+	left: -8%;
+	width: 120%;
+	transform: rotate(-15deg);
+}
+
+.dots {
+	border-top: 2vh dotted #231f20;
+}
+
+.line {
+	border-top: 2vh solid #231f20;
+}
+
+.zigzag {
+	background: linear-gradient(135deg, #4482d9 25%, transparent 25%) -50px 0,
+	linear-gradient(225deg, #4482d9 25%, transparent 25%) -50px 0,
+	linear-gradient(315deg, #4482d9 25%, transparent 25%),
+	linear-gradient(45deg, #4482d9 25%, transparent 25%);
+	background-size: 20px 20px;
+	height: 20px;
+	-webkit-backface-visibility: hidden;
+}
+
+.stripes div {
+	border-color: white;
+}
+
+.stripes div.zigzag {
+	background-color: white;
+}
+
+.stripes div:nth-child(1) { top: 8%; }
+.stripes div:nth-child(2) { top: calc((80% / 7) + 8%); }
+.stripes div:nth-child(3) { top: calc((80% / 7) * 2 + 8%); }
+.stripes div.zigzag:nth-child(3) { top: calc((80% / 7) * 2 + 8%); border: none; }
+.stripes div:nth-child(4) { top: calc((80% / 7) * 3 + 8%); }
+.stripes div:nth-child(5) { top: calc((80% / 7) * 4 + 8%); }
+.stripes div:nth-child(6) { top: calc((80% / 7) * 5 + 8%); }
+.stripes div:nth-child(7) { top: calc((80% / 7) * 6 + 8%); }
+.stripes div.zigzag:nth-child(7) { top: calc((80% / 7) * 6 + 8%); border: none; }
+.stripes div:nth-child(8) { top: calc(88%); }
+
+.egg-small {
+	width: 45%;
+	transform: translate(-60%, 10%);
+	background: #e578d5;
+}
+
+.egg-small .stripes .line {
+	border-width: 2px;
+}
+
+.egg-small2 {
+	width: 38.5%;
+	transform: translate(60%, 20%);
+	background: #fe6581;
+}
+
+.dots-offset {
+	transform: translate(11%, -22%) rotate(-15deg);
+	border-width: 1.7vh;
+}
+
+.grass {
+	left: 0;
+	bottom: -5%;
+	position: absolute;
+	z-index: 10;
+	top: 0;
+	right: 0;
+	display: flex;
+	justify-content: center;
+	align-items: flex-end;
+}
+
+.grass2 {
+	transform: translate(8%, 1%);
+	opacity: 0.9;
+}
+
+.grass3 {
+	transform: translate(4%, 2%);
+	opacity: 0.9;
+}
+
+.blade {
+	position: relative;
+	overflow: hidden;
+	transform-origin: 50% 100%;
+	height: 100%;
+	width: 100%;
+	display: flex;
+	align-items: flex-end;
+	animation: wave 3s -1.2s infinite ease-in-out;
+}
+
+.blade:before,
+.blade:after {
+	content: "";
+	position: absolute;
+	bottom: 0;
+	border-top: 0;
+	border-radius: 50%;
+}
+
+.blade:before {
+	right: 15%;
+	height: 37.5%;
+	width: 225%;
+	border-right: 2.5vh solid #aad670;
+	transform: rotateZ(15deg);
+}
+
+.blade:after {
+	right: 24%;
+	height: 37.5%;
+	width: 225%;
+	border-right: 2vh solid #abe07a;
+	transform: rotateZ(15deg);
+}
+
+@media screen and (orientation: portrait) {
+	.blade:before {
+		border-right: 2.5vw solid #aad670;
+	}
+	.blade:after {
+		border-right: 2vw solid #abe07a;
+	}
+}
+
+.blade.blade--s {
+	width: 50%;
+	height: 50%;
+}
+
+.blade.blade--l {
+	width: 75%;
+	height: 75%;
+}
+
+.blade.blade--right:before {
+	border: none;
+	left: 15%;
+	right: unset;
+	border-left: 2.5vh solid #aad670;
+	transform: none;
+}
+
+.blade.blade--right:after {
+	left: 24%;
+	right: unset;
+	border: none;
+	border-left: 2vh solid #abe07a;
+	transform: rotateZ(-10deg);
+}
+
+@media screen and (orientation: portrait) {
+	.blade.blade--right:before {
+		border-left: 2.5vw solid #aad670;
+	}
+	.blade.blade--right:after {
+		border-left: 2vw solid #abe07a;
+	}
+}
+
+@keyframes wave {
+	0% { transform: rotateZ(3deg) translateZ(-1px); }
+	25% { transform: rotateZ(-4deg) translateZ(-1px); }
+	50% { transform: rotateZ(2deg) translateZ(-1px); }
+	75% { transform: rotateZ(-6deg) translateZ(-1px); }
+	100% { transform: rotateZ(3deg) translateZ(-1px); }
+}
+
+@keyframes wave2 {
+	0% { transform: rotateZ(0deg) translateZ(-1px); }
+	25% { transform: rotateZ(-3deg) translateZ(-1px); }
+	50% { transform: rotateZ(3deg) translateZ(-1px); }
+	75% { transform: rotateZ(-1deg) translateZ(-1px); }
+	100% { transform: rotateZ(0deg) translateZ(-1px); }
+}
+
+
