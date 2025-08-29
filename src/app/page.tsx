@@ -170,7 +170,7 @@ union() {
         <Card className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
           <CardContent className="flex flex-col gap-8 p-8">
             <div>
-              <p className="text-primary text-5xl font-bold">MINTbayU-Oster-Werkstatt</p>
+              <p className="text-primary text-5xl font-bold">Cookie-Cutter-Werkstatt</p>
 
               <p className=" text-3xl font-boldtext-primary">Konvertiere deine Zeichnungen in Ausstecher</p>
             </div>

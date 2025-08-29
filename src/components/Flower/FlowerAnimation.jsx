@@ -2,22 +2,20 @@
 import React, { useState, useEffect } from 'react';
 
 // --- Configuration ---
-const NUM_ELEMENTS = 50; // Max number of eggs/flowers to attempt placing
-const EGG_COLORS = ['#fecaca', '#a7f3d0', '#bfdbfe', '#fef08a', '#ddd6fe', '#fbcfe8']; // Light red, green, blue, yellow, purple, pink
-const FLOWER_PETAL_COLORS = ['#ffffff', '#fbcfe8', '#c7d2fe', '#fef9c3']; // White, pink, indigo, light yellow
-const FLOWER_CENTER_COLOR = '#fef08a'; // Yellow
+const NUM_ELEMENTS = 300; // Erhöht von 50 auf 120 für mehr Kekse
+const COOKIE_COLORS = ['#8B4513', '#D2691E', '#A0522D', '#CD853F', '#DEB887', '#F4A460']; // Various brown cookie colors
+const ICING_COLORS = ['#FFFFFF', '#FFB6C1', '#87CEEB', '#98FB98', '#F0E68C']; // White, pink, blue, green, yellow icing
+const CHOCO_CHIP_COLOR = '#3A230A'; // Darker brown for chocolate chips
 
 // Configuration for collision detection
 const MAX_SCALE = 2; // Max random scale factor used
-const EGG_BASE_DIMS = { width: 40, height: 55 };
-const FLOWER_BASE_DIMS = { width: 35, height: 35 };
-const MIN_SPACING = 5; // Minimum pixels between bounding boxes
-const MAX_PLACEMENT_ATTEMPTS = 100; // Max tries to find a spot for one element
+const ROUND_COOKIE_BASE_DIMS = { width: 45, height: 45 };
+const MIN_SPACING = 3; // Reduziert von 5 auf 3 für eine dichtere Platzierung
+const MAX_PLACEMENT_ATTEMPTS = 500; // Erhöht von 100 auf 150 für mehr Versuche
 
 // --- Styling ---
-// Includes styles for eggs and flowers from previous versions, adjusted for chaos
 const styles = `
-  .chaotic-easter-background {
+  .chaotic-cookie-background {
     position: fixed; /* Cover the viewport */
     top: 0;
     left: 0;
@@ -30,57 +28,64 @@ const styles = `
   }
 
   /* Base style for positioned elements */
-  .easter-element {
+  .cookie-element {
     position: absolute;
   }
 
-  /* --- Egg Styles --- */
-  .egg {
-    width: ${EGG_BASE_DIMS.width}px;
-    height: ${EGG_BASE_DIMS.height}px;
-    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%; /* Egg shape */
-    box-shadow: inset -2px -3px 5px rgba(0, 0, 0, 0.1);
-  }
-  .egg::before, .egg::after {
-    content: '';
-    position: absolute;
-    left: 0;
-    width: 100%;
-    height: 8px;
-    background-color: rgba(255, 255, 255, 0.6); /* Default stripe color */
-    border-radius: 5px;
-  }
-  .egg::before { top: 15px; }
-  .egg::after { bottom: 15px; }
-
-  /* --- Flower Styles --- */
-  .flower {
-    width: ${FLOWER_BASE_DIMS.width}px;
-    height: ${FLOWER_BASE_DIMS.height}px;
-  }
-  .petal {
-    position: absolute;
-    width: 14px;
-    height: 18px;
+  /* --- Round Cookie Styles --- */
+  .round-cookie {
+    width: ${ROUND_COOKIE_BASE_DIMS.width}px;
+    height: ${ROUND_COOKIE_BASE_DIMS.height}px;
     border-radius: 50%;
-    box-shadow: 0 0 3px rgba(0,0,0,0.15);
-    transform-origin: center center; /* Use center origin for rotation */
+    box-shadow: inset -2px -3px 5px rgba(0, 0, 0, 0.2), 2px 2px 4px rgba(0, 0, 0, 0.1);
+    position: relative;
   }
-  .petal-top { top: 0; left: 50%; transform: translateX(-50%); }
-  .petal-bottom { bottom: 0; left: 50%; transform: translateX(-50%) rotate(180deg); }
-  .petal-left { top: 50%; left: 0; transform: translateY(-50%) rotate(-90deg); }
-  .petal-right { top: 50%; right: 0; transform: translateY(-50%) rotate(90deg); }
-  .flower-center {
+  .round-cookie::before {
+    content: '';
     position: absolute;
     top: 50%;
     left: 50%;
-    width: 12px;
-    height: 12px;
-    background-color: ${FLOWER_CENTER_COLOR};
+    width: 6px;
+    height: 6px;
+    background-color: rgba(0, 0, 0, 0.6);
     border-radius: 50%;
     transform: translate(-50%, -50%);
-    z-index: 1;
-    box-shadow: 0 0 3px rgba(0,0,0,0.2);
+    box-shadow: 
+      8px -3px 0 rgba(0, 0, 0, 0.6),
+      -5px 6px 0 rgba(0, 0, 0, 0.6),
+      2px 8px 0 rgba(0, 0, 0, 0.6),
+      -8px -2px 0 rgba(0, 0, 0, 0.6);
+  }
+  
+  /* Schokostückchen mit besserer Platzierung und Aussehen */
+  .round-cookie::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    border-radius: 50%;
+    background-image: 
+      radial-gradient(circle at 30% 30%, ${CHOCO_CHIP_COLOR} 0%, ${CHOCO_CHIP_COLOR} 2.5px, transparent 2.5px),
+      radial-gradient(circle at 70% 20%, ${CHOCO_CHIP_COLOR} 0%, ${CHOCO_CHIP_COLOR} 3px, transparent 3px),
+      radial-gradient(circle at 40% 60%, ${CHOCO_CHIP_COLOR} 0%, ${CHOCO_CHIP_COLOR} 2.8px, transparent 2.8px),
+      radial-gradient(circle at 60% 75%, ${CHOCO_CHIP_COLOR} 0%, ${CHOCO_CHIP_COLOR} 3.2px, transparent 3.2px),
+      radial-gradient(circle at 20% 50%, ${CHOCO_CHIP_COLOR} 0%, ${CHOCO_CHIP_COLOR} 2px, transparent 2px),
+      radial-gradient(circle at 85% 40%, ${CHOCO_CHIP_COLOR} 0%, ${CHOCO_CHIP_COLOR} 2.2px, transparent 2.2px),
+      radial-gradient(circle at 80% 80%, ${CHOCO_CHIP_COLOR} 0%, ${CHOCO_CHIP_COLOR} 2.5px, transparent 2.5px);
+    pointer-events: none;
+  }
+
+  /* --- Icing decoration */
+  .icing {
+    position: absolute;
+    top: 20%;
+    left: 20%;
+    width: 60%;
+    height: 40%;
+    border-radius: 50%;
+    opacity: 0.8;
   }
 
   /* Basic styling for content visibility */
@@ -120,9 +125,8 @@ function checkCollision(elemA, elemB, spacing) {
     return leftA < rightB && rightA > leftB && topA < bottomB && bottomA > topB;
 }
 
-
 // --- Component ---
-function EasterBackground() {
+function CookieBackground() {
     const [elements, setElements] = useState([]);
 
     useEffect(() => {
@@ -130,20 +134,53 @@ function EasterBackground() {
         const screenWidth = window.innerWidth;
         const screenHeight = window.innerHeight;
 
+        // Teile den Bildschirm in Bereiche ein für bessere Verteilung
+        const gridCellsX = 6; // Anzahl der horizontalen Zellen
+        const gridCellsY = 6; // Anzahl der vertikalen Zellen
+        const cellWidth = screenWidth / gridCellsX;
+        const cellHeight = screenHeight / gridCellsY;
+
+        // Verfolge, wie viele Elemente pro Zelle platziert wurden
+        const cellPopulation = Array(gridCellsX * gridCellsY).fill(0);
+
+        // Hilfsfunktion, um den Zellenindex basierend auf Koordinaten zu finden
+        const getCellIndex = (x, y) => {
+            const gridX = Math.floor(x / cellWidth);
+            const gridY = Math.floor(y / cellHeight);
+            return gridY * gridCellsX + gridX;
+        };
+
         for (let i = 0; i < NUM_ELEMENTS; i++) {
             let validPositionFound = false;
 
             // Try to find a valid position for the current element
             for (let attempt = 0; attempt < MAX_PLACEMENT_ATTEMPTS; attempt++) {
-                const type = Math.random() > 0.5 ? 'egg' : 'flower';
+                const type = 'round'; // Only round cookies in this version
                 const scale = Math.random() * (MAX_SCALE - 0.8) + 0.8; // Random scale
-                const baseDims = type === 'egg' ? EGG_BASE_DIMS : FLOWER_BASE_DIMS;
+
+                const baseDims = ROUND_COOKIE_BASE_DIMS;
+
                 const width = baseDims.width * scale;
                 const height = baseDims.height * scale;
 
-                // Generate random position within bounds
-                const top = getRandomInt(0, screenHeight - height); // Ensure it fits vertically
-                const left = getRandomInt(0, screenWidth - width); // Ensure it fits horizontally
+                // Finde die am wenigsten bevölkerte Zelle
+                let minPopulation = Number.MAX_VALUE;
+                let targetCellIndex = -1;
+
+                for (let idx = 0; idx < cellPopulation.length; idx++) {
+                    if (cellPopulation[idx] < minPopulation) {
+                        minPopulation = cellPopulation[idx];
+                        targetCellIndex = idx;
+                    }
+                }
+
+                // Berechne die Koordinaten innerhalb der Zielzelle
+                const cellX = targetCellIndex % gridCellsX;
+                const cellY = Math.floor(targetCellIndex / gridCellsX);
+
+                // Generiere Position innerhalb der Zielzelle mit etwas Zufall
+                const top = cellY * cellHeight + getRandomInt(5, cellHeight - height - 5);
+                const left = cellX * cellWidth + getRandomInt(5, cellWidth - width - 5);
                 const rotation = getRandomInt(-45, 45);
 
                 const newElementBounds = { top, left, width, height };
@@ -160,7 +197,7 @@ function EasterBackground() {
                 // If no collision, place the element
                 if (!collisionDetected) {
                     let elementData = {
-                        id: `elem-${i}`,
+                        id: `cookie-${i}`,
                         type: type,
                         // Store position/size info for future collision checks
                         top: top,
@@ -179,10 +216,16 @@ function EasterBackground() {
                     };
 
                     // Assign colors
-                    if (type === 'egg') {
-                        elementData.style.backgroundColor = getRandomColor(EGG_COLORS);
-                    } else {
-                        elementData.petalColor = getRandomColor(FLOWER_PETAL_COLORS);
+                    elementData.cookieColor = getRandomColor(COOKIE_COLORS);
+                    elementData.style.backgroundColor = elementData.cookieColor;
+                    elementData.style.color = elementData.cookieColor; // For star cookies
+
+
+
+                    // Aktualisiere die Zellenpopulation
+                    const cellIndex = getCellIndex(left, top);
+                    if (cellIndex >= 0 && cellIndex < cellPopulation.length) {
+                        cellPopulation[cellIndex]++;
                     }
 
                     placedElements.push(elementData); // Add to list of placed elements
@@ -192,7 +235,7 @@ function EasterBackground() {
             } // End placement attempt loop
 
             if (!validPositionFound) {
-                console.warn(`Could not find a valid position for element ${i} after ${MAX_PLACEMENT_ATTEMPTS} attempts.`);
+                console.warn(`Could not find a valid position for cookie ${i} after ${MAX_PLACEMENT_ATTEMPTS} attempts.`);
             }
         } // End main element generation loop
 
@@ -203,33 +246,21 @@ function EasterBackground() {
     return (
         <>
             <style>{styles}</style>
-            <div className="chaotic-easter-background">
+            <div className="chaotic-cookie-background">
                 {elements.map((elem) => {
-                    // Note: We apply width/height from base dims in CSS,
-                    // but scale is handled by transform.
-                    // The width/height stored in elem are for collision detection.
-                    if (elem.type === 'egg') {
+                    if (elem.type === 'round') {
                         return (
                             <div
                                 key={elem.id}
-                                className="easter-element egg"
+                                className="cookie-element round-cookie"
                                 style={elem.style}
                             >
-                                {/* Pseudo elements ::before and ::after handle stripes */}
-                            </div>
-                        );
-                    } else { // Flower
-                        return (
-                            <div
-                                key={elem.id}
-                                className="easter-element flower"
-                                style={elem.style}
-                            >
-                                <div className="petal petal-top" style={{ backgroundColor: elem.petalColor }}></div>
-                                <div className="petal petal-bottom" style={{ backgroundColor: elem.petalColor }}></div>
-                                <div className="petal petal-left" style={{ backgroundColor: elem.petalColor }}></div>
-                                <div className="petal petal-right" style={{ backgroundColor: elem.petalColor }}></div>
-                                <div className="flower-center"></div>
+                                {elem.hasIcing && (
+                                    <div
+                                        className="icing"
+                                        style={{ backgroundColor: elem.icingColor }}
+                                    ></div>
+                                )}
                             </div>
                         );
                     }
@@ -240,4 +271,4 @@ function EasterBackground() {
     );
 }
 
-export default EasterBackground;
+export default CookieBackground;
